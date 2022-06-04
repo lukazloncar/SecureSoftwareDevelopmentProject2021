@@ -4,10 +4,7 @@ import com.zuehlke.securesoftwaredevelopment.domain.*;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +44,20 @@ public class OrderRepository {
 
     public void insertNewOrder(NewOrder newOrder, int userId) {
         LocalDate date = LocalDate.now();
-        String sqlQuery = "INSERT INTO delivery (isDone, userId, restaurantId, addressId, date, comment)" +
-                "values (FALSE, " + userId + ", " + newOrder.getRestaurantId() + ", " + newOrder.getAddress() + "," +
-                "'" + date.getYear() + "-" + date.getMonthValue() + "-" + date.getDayOfMonth() + "', '" + newOrder.getComment() + "')";
-        try {
-            Connection connection = dataSource.getConnection();
+        String sqlQuery = "INSERT INTO delivery (isDone, userId, restaurantId, addressId, date, comment) values (FALSE, ?, ?, ?, ?, ?)";
+
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
             Statement statement = connection.createStatement();
-            statement.executeUpdate(sqlQuery);
+        ) {
+
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, newOrder.getRestaurantId());
+            preparedStatement.setInt(3, newOrder.getAddress());
+            preparedStatement.setString(4, date.getYear() + "-" + date.getMonthValue() + "-" + date.getDayOfMonth());
+            preparedStatement.setString(5, newOrder.getComment());
+
+            preparedStatement.executeUpdate();
 
             sqlQuery = "SELECT MAX(id) FROM delivery";
             ResultSet rs = statement.executeQuery(sqlQuery);
