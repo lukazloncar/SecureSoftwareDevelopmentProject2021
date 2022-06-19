@@ -44,7 +44,7 @@ public class CustomerRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
         return customers;
     }
@@ -65,7 +65,7 @@ public class CustomerRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
         return restaurants;
     }
@@ -75,7 +75,6 @@ public class CustomerRepository {
         String name = rs.getString(2);
         String address = rs.getString(3);
         String type = rs.getString(4);
-
         return new Restaurant(id, name, address, type);
     }
 
@@ -91,7 +90,7 @@ public class CustomerRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("Get restaurant failed for id " + id, e);
         }
         return null;
     }
@@ -102,8 +101,9 @@ public class CustomerRepository {
              Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(query);
+            auditLogger.audit("Restaurant id=" + id + " has been deleted");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("Delete restaurant failed for id " + id, e);
         }
     }
 
@@ -113,8 +113,9 @@ public class CustomerRepository {
              Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(query);
+            LOG.debug("Restaurant updated", restaurantUpdate);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("update restaurant failed for restaurant id " + restaurantUpdate.getId(), e);
         }
 
     }
@@ -130,7 +131,7 @@ public class CustomerRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
         return null;
     }
@@ -149,8 +150,9 @@ public class CustomerRepository {
              Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(query);
+            auditLogger.audit("Deleted customer where id=" + id);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
     }
 
@@ -160,8 +162,9 @@ public class CustomerRepository {
              Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(query);
+            LOG.debug("Customer updated", customerUpdate);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
     }
 
@@ -177,7 +180,7 @@ public class CustomerRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
         return addresses;
     }
@@ -194,8 +197,9 @@ public class CustomerRepository {
              Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(query);
+            auditLogger.audit("Deleted customer address where id=" + id);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
     }
 
@@ -205,8 +209,9 @@ public class CustomerRepository {
              Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(query);
+            LOG.debug("Address updated", address);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
     }
 
@@ -216,8 +221,9 @@ public class CustomerRepository {
              Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate(query);
+            LOG.debug("New address added " + newAddress.getName()+ " for user ", newAddress.getUserId());
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
     }
 }

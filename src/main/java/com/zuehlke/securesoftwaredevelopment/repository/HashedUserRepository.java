@@ -13,7 +13,6 @@ public class HashedUserRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(HashedUserRepository.class);
 
-
     private final DataSource dataSource;
 
     public HashedUserRepository(DataSource dataSource) {
@@ -32,7 +31,7 @@ public class HashedUserRepository {
                 return new HashedUser(username, passwordHash, salt, totpKey);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("User search failed for searchTerm " + username, e);
         }
         return null;
     }
@@ -45,8 +44,9 @@ public class HashedUserRepository {
             statement.setString(2, username);
 
             statement.executeUpdate();
+            LOG.debug("TOTP key saved for username ", username);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
     }
 }

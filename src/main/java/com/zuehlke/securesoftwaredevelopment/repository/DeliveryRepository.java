@@ -2,6 +2,8 @@ package com.zuehlke.securesoftwaredevelopment.repository;
 
 import com.zuehlke.securesoftwaredevelopment.domain.DeliveryDetail;
 import com.zuehlke.securesoftwaredevelopment.domain.ViewableDelivery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -12,6 +14,8 @@ import java.util.List;
 @Repository
 public class DeliveryRepository {
     private DataSource dataSource;
+
+    private static final Logger LOG = LoggerFactory.getLogger(DeliveryRepository.class);
 
     public DeliveryRepository(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -30,7 +34,7 @@ public class DeliveryRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
         return deliveries;
     }
@@ -60,7 +64,7 @@ public class DeliveryRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("Get delivery failed for id " + id, e);
         }
         return null;
     }
@@ -78,7 +82,7 @@ public class DeliveryRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("Get delivery details failed for id " + id, e);
         }
         return details;
     }
@@ -118,6 +122,8 @@ public class DeliveryRepository {
             while (rs.next()) {
                 cars.add(createDelivery(rs));
             }
+        } catch (SQLException e) {
+            LOG.warn("Delivery search failed for searchTerm " + searchQuery, e);
         }
         return cars;
     }

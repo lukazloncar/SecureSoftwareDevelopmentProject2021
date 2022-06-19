@@ -1,6 +1,9 @@
 package com.zuehlke.securesoftwaredevelopment.config;
 
+import com.zuehlke.securesoftwaredevelopment.repository.RoleRepository;
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
@@ -10,10 +13,14 @@ import java.security.SecureRandom;
 
 @WebListener
 public class CsrfHttpSessionListener implements HttpSessionListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CsrfHttpSessionListener.class);
+
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         String token = createToken();
         se.getSession().setAttribute("CSRF_TOKEN", token);
+        LOG.debug("Session created!");
     }
 
     private static String createToken() {

@@ -22,7 +22,6 @@ import javax.servlet.http.HttpSession;
 public class CustomerController {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomerController.class);
-    private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(CustomerController.class);
 
     private final CustomerRepository customerRepository;
 
@@ -90,6 +89,7 @@ public class CustomerController {
             AccessDeniedException {
         String csrf = session.getAttribute("CSRF_TOKEN").toString();
         if (!csrf.equals(csrfToken)) {
+            LOG.warn("Forbidden access for user with token " + csrfToken);
             throw new AccessDeniedException("Forbidden");
         }
         customerRepository.updateCustomer(customerUpdate);

@@ -1,6 +1,8 @@
 package com.zuehlke.securesoftwaredevelopment.repository;
 
 import com.zuehlke.securesoftwaredevelopment.domain.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -13,6 +15,8 @@ import java.util.List;
 public class OrderRepository {
 
     private DataSource dataSource;
+
+    private static final Logger LOG = LoggerFactory.getLogger(OrderRepository.class);
 
     public OrderRepository(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -30,7 +34,7 @@ public class OrderRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("Get menu failed for id " + id, e);
         }
 
         return menu;
@@ -58,6 +62,7 @@ public class OrderRepository {
             preparedStatement.setString(5, newOrder.getComment());
 
             preparedStatement.executeUpdate();
+            LOG.info("New order created! Order: restaurant id=" + newOrder.getRestaurantId() + ", address=" + newOrder.getAddress() + ", date=" + date.getYear() + "-" + date.getMonthValue() + "-" + date.getDayOfMonth() + ", comment=" + newOrder.getComment());
 
             sqlQuery = "SELECT MAX(id) FROM delivery";
             ResultSet rs = statement.executeQuery(sqlQuery);
@@ -76,12 +81,12 @@ public class OrderRepository {
                     deliveryItem += "(" + item.getAmount() + ", " + item.getFoodId() + ", " + deliveryId + ")";
                     sqlQuery += deliveryItem;
                 }
-                System.out.println(sqlQuery);
+                LOG.debug("SQL query being executed: " + sqlQuery);
                 statement.executeUpdate(sqlQuery);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("An exception with the error code " + e.getErrorCode() + " occurred." ,e);
         }
 
 
@@ -98,7 +103,7 @@ public class OrderRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn("Get address failed for user " + userId, e);
         }
         return addresses;
     }
